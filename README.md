@@ -63,7 +63,7 @@ Lien Trello : https://trello.com/b/lJonT4xD/suivi-projet-infra
 
 ## DOCUMENTATIONS 
 
-Vous trouverez aussi dans ce repositorry : 
+- **Vous trouverez aussi dans ce repositorry :** 
     - la documentation d'installation 
     - un schéma de représentation de la solution 
     - un guide d'utilisation de la solution pour un utilisateur final
