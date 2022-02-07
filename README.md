@@ -50,6 +50,9 @@ Mise en place d'envoi de notification (via métriques Grafana)
     - redémarrage automatique des services en cas d'arrêt + envoi de mail d'alerte si le service reste down. 
     - Notification envoyé aux utilisateurs lors de l'ajout / suppression d'un ou plusieurs fichiers. 
 
+- **Script de déploiement de la solution sur des infrastructures clientes**
+    - Faire un script qui déploierait la solution et qu'elle soit fonctionnelle directement 
+
 ## **SUIVI DU PROJET** 
 
 Le suivi/description des tâches ainsi que leurs dates de réalisation se fera via des cartes **Trello**.
@@ -68,7 +71,4 @@ Lien Trello : https://trello.com/b/lJonT4xD/suivi-projet-infra
     - un schéma de représentation de la solution 
     - un guide d'utilisation de la solution pour un utilisateur final
 
-
-- **Script de déploiement de la solution sur des infrastructures clientes**
-    - Faire un script qui déploierait la solution et qu'elle soit fonctionnelle directement 
     
