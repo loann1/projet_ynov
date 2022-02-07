@@ -4,8 +4,11 @@
 ############# SUJET DU PROJET ############
 
 Serveur nextcloud qui stocke des fichiers (films / séries / photos / cours...).
+
 Le serveur tourne sous Kubernetes et Docker. 
+
 Le serveur doit être accessible depuis l'extérieur (lien https avec nom de domaine).
+
 Les utilisateurs doivent pouvoir avoir accès aux serveurs depuis le lien htpps via un compte personnel sur l'application, et doivent pouvoir accéder et utiliser les différentes données partagées.
 
 
