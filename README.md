@@ -68,4 +68,7 @@ Lien Trello : https://trello.com/b/lJonT4xD/suivi-projet-infra
     - un schéma de représentation de la solution 
     - un guide d'utilisation de la solution pour un utilisateur final
 
+
+- **Script de déploiement de la solution sur des infrastructures clientes**
+    - Faire un script qui déploierait la solution et qu'elle soit fonctionnelle directement 
     
