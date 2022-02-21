@@ -245,8 +245,14 @@ kubectl apply -f https://raw.githubusercontent.com/prometheus-operator/prometheu
 ```sh
 nano /etc/prometheus.yaml
 ```
+- Fichier de conf : projet_ynov/monitoring/prometheus.yaml
 
+- Installation de Prometheus avec Helm (dans le namespace Admin) : 
 
+```sh
+cd /etc
+helm install prometheus -f prometheus.yaml prometheus-community/kube-prometheus-stack -n admin
+```
 
 
 
