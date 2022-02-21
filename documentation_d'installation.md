@@ -125,3 +125,130 @@ sudo chown $(id -u):$(id -g) $HOME/.kube/config
 kubectl cluster-info
 ```
 
+# **Installation Calico**
+
+- Déploiement Calico 
+
+```sh
+kubectl create -f https://docs.projectcalico.org/manifests/tigera-operator.yaml
+```
+
+- Création d’un fichier avec les paramètres pour préciser le réseau (CIDR) crée pour le cluster : 
+
+```sh
+nano fichier_calico_cidr.yaml
+```
+- Application du fichier créer ci-dessus 
+
+```sh
+kubectl apply –f fichier_calico_cidr.yaml
+```
+- Désactivation des taint : 
+
+```sh
+kubectl taint nodes --all node-role.kubernetes.io/master-
+```
+- Check de l'état des pods 
+
+```sh
+kubectl get pods --all-namespaces
+```
+
+- Check du node 
+
+```sh
+kubectl get nodes -o wide
+```
+
+# **Installation Local Storage Provisioner**
+ 
+- Déploiement Local Storage Provisioner 
+
+```sh
+kubectl apply -f https://raw.githubusercontent.com/rancher/local-path-provisioner/master/deploy/local-path-storage.yaml
+```
+
+- Check de la création 
+
+```sh
+kubectl -n local-path-storage get pod
+```
+
+- Ajout du storage par défaut 
+
+```sh
+kubectl patch storageclass local-path -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
+```
+
+- Vérification 
+
+```sh
+kubectl get storageclass
+```
+
+# **Installation de Helm**
+
+```sh
+curl https://baltocdn.com/helm/signing.asc | sudo apt-key add -
+sudo apt-get install apt-transport-https --yes
+echo "deb https://baltocdn.com/helm/stable/debian/ all main" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list
+sudo apt-get update
+sudo apt-get install helm
+```
+
+# **Installation Ingress Nginx**
+
+- Ajout repo Helm 
+
+```sh
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+helm repo update
+```
+
+- Création du namespace web
+
+```sh
+kubectl create ns web
+```
+
+- Création d’un fichier nginx-ingress.yaml pour implémenter la config perso du ingress nginx
+
+```sh
+nano /etc/ nginx-ingress.yaml
+helm install nginx-ingress -f nginx-ingress.yaml ingress-nginx/ingress-nginx -n web
+```
+
+# **Installation Monitoring**
+
+- Ajout du repo helm de pour Prometheus : 
+
+```sh
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo update
+```
+
+- Ajout des CRDs : 
+
+```sh
+kubectl apply -f https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/v0.50.0/example/prometheus-operator-crd/monitoring.coreos.com_alertmanagerconfigs.yaml
+kubectl apply -f https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/v0.50.0/example/prometheus-operator-crd/monitoring.coreos.com_alertmanagers.yaml
+kubectl apply -f https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/v0.50.0/example/prometheus-operator-crd/monitoring.coreos.com_podmonitors.yaml
+kubectl apply -f https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/v0.50.0/example/prometheus-operator-crd/monitoring.coreos.com_probes.yaml
+kubectl apply -f https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/v0.50.0/example/prometheus-operator-crd/monitoring.coreos.com_prometheuses.yaml
+kubectl apply -f https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/v0.50.0/example/prometheus-operator-crd/monitoring.coreos.com_prometheusrules.yaml
+kubectl apply -f https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/v0.50.0/example/prometheus-operator-crd/monitoring.coreos.com_servicemonitors.yaml
+kubectl apply -f https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/v0.50.0/example/prometheus-operator-crd/monitoring.coreos.com_thanosrulers.yaml
+```
+
+- Création du fichier de configuration personnalisé de Prometheus : 
+
+```sh
+nano /etc/prometheus.yaml
+```
+
+
+
+
+
+
+
