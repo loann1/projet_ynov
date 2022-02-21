@@ -122,6 +122,6 @@ sudo chown $(id -u):$(id -g) $HOME/.kube/config
 - Check des infos du Cluster 
 
 ```sh
-kubectl cluster-in
+kubectl cluster-info
 ```
 
