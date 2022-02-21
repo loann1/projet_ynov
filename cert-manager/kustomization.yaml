@@ -1,0 +1,11 @@
+namespace: ingress-nginx
+bases:
+- github.com/kubernetes/ingress-nginx/deploy/static/provider/cloud?ref=controller-v0.44.0
+# you can choose different versions here
+
+patchesStrategicMerge:
+- service.yaml
+
+resources:
+#- https://github.com/jetstack/cert-manager/releases/download/v1.1.0/cert-manager.yaml
+- cluster-issuer.yaml
