@@ -101,5 +101,27 @@ sudo systemctl enable docker
 ```sh
 sudo systemctl enable kubelet
 ```
+- Pull des images des containers 
+```sh
+sudo kubeadm config images pull
+```
+- Création du Cluster 
 
+```sh
+kubeadm init --pod-network-cidr=192.168.1.0/16 --apiserver-advertise-address=192.168.0.76
+```
+
+- Configuration de kubectl 
+
+```sh
+mkdir -p $HOME/.kube
+sudo cp -f /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
+```
+
+- Check des infos du Cluster 
+
+```sh
+kubectl cluster-in
+```
 
