@@ -108,7 +108,7 @@ sudo kubeadm config images pull
 - Création du Cluster 
 
 ```sh
-kubeadm init --pod-network-cidr=192.168.1.0/16 --apiserver-advertise-address=192.168.0.76
+kubeadm init --pod-network-cidr= 10.0.2.0/16 --apiserver-advertise-address=192.168.0.76
 ```
 
 - Configuration de kubectl 
