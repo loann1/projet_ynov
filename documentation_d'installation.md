@@ -5,6 +5,12 @@
 - [Documentation](#documentation)
   - [Sommaire](#sommaire)
   - [Serveur Master (vm_k8s)](#serveur_master_(vm_k8s))
+    - [Installation Kubernetes](#installation_kubernetes)
+    - [Installation Calico](#installation_calico)
+    - [Installation Local Storage Provisionner](#installation_local_storage_provisionner)
+    - [Installation Helm](#installation_helm)
+    - [Installation Ingress Nginx](#installation_nginx)
+    - [Installation Monitoring](#installation_monitoring)
 
 ## **Serveur Master (vm_k8s)**
 
@@ -17,7 +23,7 @@
     - Disque : 100Go 
 
 
-# **Installation de Kubernetes**
+## **Installation de Kubernetes**
 
 - Update du serveur 
 
@@ -259,6 +265,25 @@ nano /etc/prometheus.yaml
 cd /etc
 helm install prometheus -f prometheus.yaml prometheus-community/kube-prometheus-stack -n admin
 ```
+
+- Check de la présence et de l'état des pods Prometheus & Grafana 
+```sh
+kubectl get pods -n admin
+OU (pour afficher tous les pods)
+kubectl get pods -A 
+```
+
+- Ajout du nom de domaine et de l’adresse du serveur sur le PC pour faire la redirection vers le Grafana : 
+
+```sh
+C:\Windows\System32\drivers\etc\hosts
+```
+```sh
+192.168.0.76 grafana-tp-k8s.fr
+```
+
+
+
 
 
 
