@@ -7,5 +7,4 @@ spec:
   externalTrafficPolicy: Cluster
   externalIPs:
   # Add your cluster ip address here:
-  - {YOUR_CLUSTER_IP}
-
+  - 192.168.0.76
