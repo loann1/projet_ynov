@@ -322,7 +322,7 @@ helm template  -f my-values.yaml --output-dir /loki-stack/my-values.yaml --names
     - RAM : 4096Mo 
     - Disque : 150Go 
 
-  - Installation de Kubeadm 
+- Installation de Kubeadm 
   
 - Update du serveur 
 
