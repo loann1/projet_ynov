@@ -305,6 +305,18 @@ helm template  -f my-values.yaml --output-dir /loki-stack/my-values.yaml --names
 - Ajout de la Datasource de Loki sur le Grafana : 
   - Dans Grafana allez dans configuration / datasources et ajouter en un nouveau de type loki
 
+  - Ajout de l'URL et "Save & test"
+  
+  ```sh
+    http://http://loki:3100
+  ```
+
+
+
+
+
+
+
 
 
 
