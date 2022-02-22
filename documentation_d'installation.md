@@ -282,8 +282,28 @@ C:\Windows\System32\drivers\etc\hosts
 192.168.0.76 grafana-tp-k8s.fr
 ```
 
+# **Installation Loki Stack**
 
+- Ajout des repo Helm de Loki-Stack + récupération des valeurs du fichier yaml
 
+```sh
+helm repo add loki https://Grafana.github.io/loki/charts
+help repo update
+helm fetch --untar loki/loki-stack
+cd loki-stack
+cp values.yaml my-values.yaml
+```
+
+- Fichier des valeurs mise dans le fichier yaml : projet_ynov/monitoring/loki_values.yaml
+
+- Application du fichier customisé 
+
+```sh
+helm template  -f my-values.yaml --output-dir /loki-stack/my-values.yaml --namespace admin --name loki .
+```
+
+- Ajout de la Datasource de Loki sur le Grafana : 
+  - Dans Grafana allez dans configuration / datasources et ajouter en un nouveau de type loki
 
 
 
