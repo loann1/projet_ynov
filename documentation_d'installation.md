@@ -23,7 +23,7 @@
     - Disque : 100Go 
 
 
-## **Installation de Kubernetes**
+    # **Installation de Kubernetes**
 
 - Update du serveur 
 
@@ -137,7 +137,7 @@ sudo chown $(id -u):$(id -g) $HOME/.kube/config
 kubectl cluster-info
 ```
 
-# **Installation Calico**
+  # **Installation Calico**
 
 - Déploiement Calico 
 
@@ -172,7 +172,7 @@ kubectl get pods --all-namespaces
 kubectl get nodes -o wide
 ```
 
-# **Installation Local Storage Provisioner**
+  # **Installation Local Storage Provisioner**
  
 - Déploiement Local Storage Provisioner 
 
@@ -198,7 +198,7 @@ kubectl patch storageclass local-path -p '{"metadata": {"annotations":{"storagec
 kubectl get storageclass
 ```
 
-# **Installation de Helm**
+  # **Installation de Helm**
 
 ```sh
 curl https://baltocdn.com/helm/signing.asc | sudo apt-key add -
@@ -208,7 +208,7 @@ sudo apt-get update
 sudo apt-get install helm
 ```
 
-# **Installation Ingress Nginx**
+  # **Installation Ingress Nginx**
 
 - Ajout repo Helm 
 
@@ -230,7 +230,7 @@ nano /etc/ nginx-ingress.yaml
 helm install nginx-ingress -f nginx-ingress.yaml ingress-nginx/ingress-nginx -n web
 ```
 
-# **Installation Monitoring**
+  # **Installation Monitoring**
 
 - Ajout du repo helm de pour Prometheus : 
 
@@ -282,7 +282,7 @@ C:\Windows\System32\drivers\etc\hosts
 192.168.0.76 grafana-tp-k8s.fr
 ```
 
-# **Installation Loki Stack**
+  # **Installation Loki Stack**
 
 - Ajout des repo Helm de Loki-Stack + récupération des valeurs du fichier yaml
 
@@ -310,6 +310,264 @@ helm template  -f my-values.yaml --output-dir /loki-stack/my-values.yaml --names
   ```sh
     http://http://loki:3100
   ```
+
+
+## **Serveur Nexcloud (srv_nextcloud)**
+
+- VM : 
+    - Nom : srv_nextcloud
+    - OS : ubuntu 20.04
+    - Adresse IP : 192.168.0.72
+    - CPU : 2 
+    - RAM : 4096Mo 
+    - Disque : 150Go 
+
+  - Installation de Kubeadm 
+  
+- Update du serveur 
+
+```sh
+   sudo apt update
+```
+
+- /!\ Désactivation de la swap (pas compatible avec K8S)
+Commentez la ligne de la swap dans le fichier /etc/fstab
+
+```sh
+   sudo sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
+   sudo swapoff -a
+```
+
+- Installation kubelet, kubeadm and kubectl
+
+```sh
+   sudo apt update
+   sudo apt -y install curl apt-transport-https
+   curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add - 
+   echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+```
+
+- Installation des paquets nécessaires
+
+```sh
+   sudo apt update
+   sudo apt -y install vim git curl wget kubelet kubeadm kubectl
+   sudo apt-mark hold kubelet kubeadm kubectl
+```
+
+- Activation des modules kernel et configuration du sysctl
+
+```sh
+# Enable kernel modules
+sudo modprobe overlay
+sudo modprobe br_netfilter
+
+# Add some settings to sysctl
+sudo tee /etc/sysctl.d/kubernetes.conf<<EOF
+net.bridge.bridge-nf-call-ip6tables = 1
+net.bridge.bridge-nf-call-iptables = 1
+net.ipv4.ip_forward = 1
+EOF
+
+# Reload sysctl
+sudo sysctl --system
+```
+
+- Installation de Docker Runtime 
+
+```sh
+# Add repo and Install packages
+sudo apt update
+sudo apt install -y curl gnupg2 software-properties-common apt-transport-https ca-certificates
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+sudo apt update
+sudo apt install -y containerd.io docker-ce docker-ce-cli
+
+# Create required directories
+sudo mkdir -p /etc/systemd/system/docker.service.d
+
+# Create daemon json config file
+sudo tee /etc/docker/daemon.json <<EOF
+{
+  "exec-opts": ["native.cgroupdriver=systemd"],
+  "log-driver": "json-file",
+  "log-opts": {
+    "max-size": "100m"
+  },
+  "storage-driver": "overlay2"
+}
+EOF
+
+# Start and enable Services
+sudo systemctl daemon-reload 
+sudo systemctl restart docker
+sudo systemctl enable docker
+```
+
+- Ajout du serveur en tant que node worker dans le Cluster
+
+  - Depuis le serveur Master --> création d'un token pour joindre le serveur nextcloud au Cluster 
+  ```sh
+  kubeadm token create --print-join-command 
+  ```
+
+  - Exécution de la commande retourné ci-dessus depuis le serveur nextcloud
+  
+  ```sh
+  kubeadm join 192.168.0.76:6443 --token xkvtvn.kjggz5fj0eqs2zpo --discovery-token-ca-cert-hash sha256:88155f6747614abf802e75e901faefc207313eb5fdd0b4419d425db1c55a93b1
+  ```
+  
+  /!\ Si une erreur concernant Docker apparait lors de l'ajout au cluster, lancer ces commandes puis relancer la commande précédente "kubeadm join" : 
+   ```sh
+  sudo mkdir /etc/docker
+  cat <<EOF | sudo tee /etc/docker/daemon.json
+  {
+    "exec-opts": ["native.cgroupdriver=systemd"],
+    "log-driver": "json-file",
+    "log-opts": {
+      "max-size": "100m"
+    },
+    "storage-driver": "overlay2"
+  }
+  EOF
+  sudo systemctl enable docker
+  sudo systemctl daemon-reload
+  sudo systemctl restart docker
+  sudo kubeadm reset
+  sudo kubeadm init
+  ```
+ 
+
+  - Vérification de l'apparition du serveur Nextcloud dans les nodes du Cluster depuis le serveur Master
+
+  ```sh
+  kubectl get nodes
+  NAME           STATUS   ROLES                  AGE   VERSION
+  srvnextcloud   Ready    <none>                 28d   v1.23.4
+  vmk8s          Ready    control-plane,master   72d   v1.23.0
+  ```
+  
+ ## **Serveur Backup (srv_bkp)**
+
+- VM : 
+    - Nom : srv_bkp
+    - OS : ubuntu 20.04
+    - Adresse IP : 192.168.0.77
+    - CPU : 2 
+    - RAM : 4096Mo 
+    - Disque : 200Go 
+
+  - Installation de Kubeadm 
+  
+- Update du serveur 
+
+```sh
+   sudo apt update
+```
+
+- /!\ Désactivation de la swap (pas compatible avec K8S)
+Commentez la ligne de la swap dans le fichier /etc/fstab
+
+```sh
+   sudo sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
+   sudo swapoff -a
+```
+
+- Installation kubelet, kubeadm and kubectl
+
+```sh
+   sudo apt update
+   sudo apt -y install curl apt-transport-https
+   curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add - 
+   echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+```
+
+- Installation des paquets nécessaires
+
+```sh
+   sudo apt update
+   sudo apt -y install vim git curl wget kubelet kubeadm kubectl
+   sudo apt-mark hold kubelet kubeadm kubectl
+```
+
+- Activation des modules kernel et configuration du sysctl
+
+```sh
+# Enable kernel modules
+sudo modprobe overlay
+sudo modprobe br_netfilter
+
+# Add some settings to sysctl
+sudo tee /etc/sysctl.d/kubernetes.conf<<EOF
+net.bridge.bridge-nf-call-ip6tables = 1
+net.bridge.bridge-nf-call-iptables = 1
+net.ipv4.ip_forward = 1
+EOF
+
+# Reload sysctl
+sudo sysctl --system
+```
+
+- Installation de Docker Runtime 
+
+```sh
+# Add repo and Install packages
+sudo apt update
+sudo apt install -y curl gnupg2 software-properties-common apt-transport-https ca-certificates
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+sudo apt update
+sudo apt install -y containerd.io docker-ce docker-ce-cli
+
+# Create required directories
+sudo mkdir -p /etc/systemd/system/docker.service.d
+
+# Create daemon json config file
+sudo tee /etc/docker/daemon.json <<EOF
+{
+  "exec-opts": ["native.cgroupdriver=systemd"],
+  "log-driver": "json-file",
+  "log-opts": {
+    "max-size": "100m"
+  },
+  "storage-driver": "overlay2"
+}
+EOF
+
+# Start and enable Services
+sudo systemctl daemon-reload 
+sudo systemctl restart docker
+sudo systemctl enable docker
+```
+
+- Ajout du serveur en tant que node worker dans le Cluster
+
+  - Depuis le serveur Master --> création d'un token pour joindre le serveur backup au Cluster 
+  ```sh
+  kubeadm token create --print-join-command 
+  ```
+
+  - Exécution de la commande retourné ci-dessus depuis le serveur backup
+  
+  ```sh
+  kubeadm join 192.168.0.76:6443 --token qrbka7.x89o36cju7iopkqf --discovery-token-ca-cert-hash sha256:88155f6747614abf802e75e901faefc207313eb5fdd0b4419d425db1c55a93b1
+  ```
+
+  - Vérification de l'apparition du serveur de Backup dans les nodes du Cluster depuis le serveur Master
+
+  ```sh
+  kubectl get nodes
+  NAME           STATUS   ROLES                  AGE   VERSION
+  srv-bkp        Ready    <none>                 16h   v1.23.4
+  srvnextcloud   Ready    <none>                 28d   v1.23.4
+  vmk8s          Ready    control-plane,master   72d   v1.23.0
+  ```
+  
+  
+ 
+
+
 
 
 
