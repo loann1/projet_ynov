@@ -123,6 +123,34 @@ sudo kubeadm config images pull
 kubeadm init --pod-network-cidr= 10.0.2.0/16 --apiserver-advertise-address=192.168.0.76
 ```
 
+- Erreur rencontrée lors de l'initialisation du Cluster : 
+```sh
+[kubelet-check] The HTTP call equal to 'curl -sSL http://localhost:10248/healthz' failed with error: Get "http://localhost:10248/healthz": dial tcp 127.0.0.1:10248: connect: connection refused.
+```
+--> Résolution : 
+```sh
+sudo mkdir /etc/docker
+cat <<EOF | sudo tee /etc/docker/daemon.json
+{
+  "exec-opts": ["native.cgroupdriver=systemd"],
+  "log-driver": "json-file",
+  "log-opts": {
+    "max-size": "100m"
+  },
+  "storage-driver": "overlay2"
+}
+EOF
+sudo systemctl enable docker
+sudo systemctl daemon-reload
+sudo systemctl restart docker
+sudo kubeadm reset
+```
+
+- Relancer la commande de kube init : 
+```sh
+kubeadm init --apiserver-advertise-address=192.168.0.62 --pod-network-cidr=10.10.0.0/16
+```
+
 - Configuration de kubectl 
 
 ```sh
