@@ -15,4 +15,5 @@ kubectl apply -f nextcloud-shared-pvc.yml
 kubectl apply -f nextcloud-db.yml
 kubectl apply -f nextcloud-server.yml 
 kubectl apply -f cluster-ingress.yml 
+kubectl apply -f nginx-ingress.yml
 ```
