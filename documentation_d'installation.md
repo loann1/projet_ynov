@@ -255,6 +255,32 @@ kubectl create ns web
 
 ```sh
 nano /etc/ nginx-ingress.yaml
+```
+```sh
+## Ficher de conf nginx-ingress.yaml 
+enabled: true
+rbac:
+  create: true
+defaultBackend:
+  enabled: true
+controller:
+  service:
+    enabled: true
+    externalIPs:
+      - 192.168.0.76
+    enableHttp: true
+    enableHttps: true
+    healthCheckNodePort: 0
+    ports:
+      http: 80
+      https: 443
+    targetPorts:
+      http: http
+      https: https
+    type: NodePort
+
+```` 
+```sh
 helm install nginx-ingress -f nginx-ingress.yaml ingress-nginx/ingress-nginx -n web
 ```
 
