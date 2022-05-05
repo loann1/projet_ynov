@@ -618,6 +618,20 @@ sudo systemctl enable docker
   vmk8s          Ready    control-plane,master   72d   v1.23.0
   ```
   
+  ## Fichiers de configuration
+
+```sh
+Remarque : les adresses IP utilisés dans les différents fichiers de conf ne correspondront pas forcémeent à celles indiquées dans la documentation d'installation dû aux tests effectués avec ces fichiers mais sur des serveurs différents (serveurs de tests) 
+```
+- Les fichiers de configuration pour le deploiement Nextcloud sont dans le dossier /nexcloud : https://github.com/loann1/projet_ynov/tree/main/nextcloud
+
+- Les fichiers de configuration pour le monitoring se trouvent dans le dossiers /monitoring : https://github.com/loann1/projet_ynov/tree/main/monitoring
+
+- Les fichiers de configuration pour le certificat (HTTPS) se trouvent dans le dossier /cert-manager : https://github.com/loann1/projet_ynov/tree/main/cert-manager
+
+
+
+  
   
  
 
