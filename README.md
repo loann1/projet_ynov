@@ -1,6 +1,8 @@
 # PROJET INFRA
 
-## Lien vers le sujet : https://gitlab.com/it4lik/b3-projet-2021/-/blob/main/projet.md
+## Lien suivi Trello : Lien Trello : https://trello.com/b/lJonT4xD/suivi-projet-infra
+
+# Lien vers le sujet : https://gitlab.com/it4lik/b3-projet-2021/-/blob/main/projet.md
 
 # PRESENTATION DU PROJET
 
